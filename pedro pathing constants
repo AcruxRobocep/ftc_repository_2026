@@ -1,0 +1,67 @@
+package org.firstinspires.ftc.teamcode.pedroPathing;
+
+// importamos as funcoes da biblioteca do pedro pathing para odometria //
+import com.pedropathing.control.FilteredPIDFCoefficients;
+import com.pedropathing.control.PIDFCoefficients;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.follower.FollowerConstants;
+import com.pedropathing.ftc.FollowerBuilder;
+import com.pedropathing.ftc.drivetrains.MecanumConstants;
+import com.pedropathing.ftc.localization.Encoder;
+import com.pedropathing.ftc.localization.constants.ThreeWheelConstants;
+import com.pedropathing.ftc.localization.constants.ThreeWheelIMUConstants;
+import com.pedropathing.paths.PathConstraints;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+public class Constants {
+    public static FollowerConstants followerConstants = new FollowerConstants()
+            .mass(9.8)
+            .forwardZeroPowerAcceleration(-49.01522184578332)
+            .lateralZeroPowerAcceleration(-66.87180679135113)
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.1,0,0.02,0.04))
+            .headingPIDFCoefficients(new PIDFCoefficients(1,0,0.04,0.05))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(0.01,0,0.0005,0.6,0.05))
+            //.centripetalScaling(0.0005)
+            ;
+
+
+    public static MecanumConstants driveConstants = new MecanumConstants()
+            .maxPower(1)
+            .xVelocity(85.06739880650647)//85.06739880650647
+            .yVelocity(32.933668984561784) //32.933668984561784   43.70145652783765
+            .rightFrontMotorName("RF") // adicionamos informacoes para motores //
+            .rightRearMotorName("RB")
+            .leftRearMotorName("LF")//
+            .leftFrontMotorName("LB")//
+            .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD);
+
+    public static ThreeWheelIMUConstants localizerConstants = new ThreeWheelIMUConstants() // utilizamos para odometria de 3 pods com imu //
+            .forwardTicksToInches(.002948961333286321)
+            .strafeTicksToInches(0.0032229467172370106)//0.0032229467172370106   .002949941066777599
+            .turnTicksToInches(0.0050405762406964666) //0.0050405762406964666   .0029535737190826935333
+            .leftPodY(3.46457) // obrigatoriamente se leftpodY for -, entao sua direcao contraria deve ser 3.46457
+            .rightPodY(-3.8189) //-3.8189
+            .strafePodX(-4.80315) // pod da traseira -4.80315
+            .leftEncoder_HardwareMapName("RB")
+            .rightEncoder_HardwareMapName("LF")
+            .strafeEncoder_HardwareMapName("LB")
+            .leftEncoderDirection(Encoder.FORWARD)
+            .rightEncoderDirection(Encoder.REVERSE)
+            .strafeEncoderDirection(Encoder.FORWARD)
+            .IMU_HardwareMapName("imu")
+            .IMU_Orientation(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.LEFT));
+    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 0.9, 1);
+
+    public static Follower createFollower(HardwareMap hardwareMap) {
+        return new FollowerBuilder(followerConstants, hardwareMap)
+                .pathConstraints(pathConstraints)
+                .mecanumDrivetrain(driveConstants)
+                .threeWheelIMULocalizer(localizerConstants)
+                .build();
+    }
+}
